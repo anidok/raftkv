@@ -1,0 +1,11 @@
+# Node configuration
+node_id: "node1"
+bind_addr: "127.0.0.1:8000"
+data_dir: "./data"
+
+# Raft configuration
+raft_bind_addr: "127.0.0.1:8001"
+join_addr: ""  # Leave empty for the first node
+
+# HTTP API configuration
+http_addr: "127.0.0.1:8080" 

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: raftkv
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: raftkv
+  template:
+    metadata:
+      labels:
+        app: raftkv
+    spec:
+      containers:
+      - name: raftkv
+        image: raftkv:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8001
+          name: raft
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        env:
+        - name: NODE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: BIND_ADDR
+          value: "0.0.0.0:8000"
+        - name: RAFT_BIND_ADDR
+          value: "0.0.0.0:8001"
+        - name: HTTP_ADDR
+          value: "0.0.0.0:8080"
+        - name: DATA_DIR
+          value: "/data"
+      volumes:
+      - name: data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: raftkv
+spec:
+  selector:
+    app: raftkv
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  - name: raft
+    port: 8001
+    targetPort: 8001 

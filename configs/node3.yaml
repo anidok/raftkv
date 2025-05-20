@@ -1,0 +1,6 @@
+node_id: "node3"
+bind_addr: "127.0.0.1:8003"
+advertise_addr: "127.0.0.1:8003"
+http_addr: "127.0.0.1:8082"
+data_dir: "./data/node3"
+join_addr: "127.0.0.1:8001" 
