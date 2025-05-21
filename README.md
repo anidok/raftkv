@@ -9,13 +9,31 @@ RaftKV is a distributed key-value store that uses the Raft consensus algorithm f
 - Automatic leader election
 - Cluster membership management
 - Fault tolerance and data replication
-- Persistent storage using BoltDB
+- Multiple storage backends:
+  - BoltDB (default)
+  - SQLite
 - Snapshot support for log compaction
 
 ## Prerequisites
 
 - Go 1.24 or later
 - Make (for using the Makefile)
+- SQLite development libraries (if using SQLite storage)
+
+### Installing SQLite Dependencies
+
+#### Ubuntu/Debian:
+```bash
+sudo apt-get install sqlite3 libsqlite3-dev
+```
+
+#### macOS:
+```bash
+brew install sqlite3
+```
+
+#### Windows:
+SQLite is included with the Go SQLite driver.
 
 ## Installation
 
@@ -46,6 +64,33 @@ The project includes a Makefile with targets to run a 3-node cluster locally. Ea
 - Node 1: HTTP API on 8080, Raft on 8001
 - Node 2: HTTP API on 8081, Raft on 8002
 - Node 3: HTTP API on 8082, Raft on 8003
+
+### Storage Options
+
+You can choose between two storage backends using the `STORAGE` environment variable:
+
+1. BoltDB (default):
+```bash
+make run-cluster
+# or
+STORAGE=bolt make run-cluster
+```
+
+2. SQLite:
+```bash
+STORAGE=sqlite make run-cluster
+```
+
+The same storage option can be used with individual node commands:
+```bash
+# Run a single node with SQLite
+STORAGE=sqlite make run-node1
+
+# Run a single node with BoltDB (default)
+make run-node1
+```
+
+Note: The Raft logs and snapshots will always use BoltDB for storage, regardless of the KV store backend chosen.
 
 ### Option 1: Start Individual Nodes
 
@@ -152,6 +197,8 @@ http_addr: "127.0.0.1:8080"
 │   ├── api/              # HTTP API implementation
 │   ├── raft/             # Raft consensus implementation
 │   └── storage/          # Storage implementation
+│       ├── bolt_store.go # BoltDB storage implementation
+│       └── sqlite_store.go # SQLite storage implementation
 ├── Makefile              # Build and run targets
 └── README.md            # This file
 ```

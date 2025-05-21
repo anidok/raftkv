@@ -16,6 +16,7 @@ import (
 func main() {
 	// Parse command line flags
 	configPath := flag.String("config", "config.yaml", "path to config file")
+	storageType := flag.String("storage", "bolt", "storage type (bolt or sqlite)")
 	flag.Parse()
 
 	// Load configuration
@@ -29,8 +30,16 @@ func main() {
 		log.Fatalf("failed to create data directory: %v", err)
 	}
 
-	// Create storage
-	store, err := storage.NewBoltStore(cfg.DataDir)
+	// Create storage based on type
+	var store storage.Store
+	switch *storageType {
+	case "bolt":
+		store, err = storage.NewBoltStore(cfg.DataDir)
+	case "sqlite":
+		store, err = storage.NewSQLiteStore(cfg.DataDir)
+	default:
+		log.Fatalf("unsupported storage type: %s", *storageType)
+	}
 	if err != nil {
 		log.Fatalf("failed to create storage: %v", err)
 	}

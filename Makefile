@@ -45,26 +45,26 @@ k8s-ip:
 k8s-port-forward:
 	kubectl port-forward service/raftkv 8080:8080 8001:8001
 
-# Run individual nodes
+# Run individual nodes with storage option
 run-node1:
 	go build -o bin/raftkv ./cmd/raftkv
-	./bin/raftkv --config configs/node1.yaml
+	./bin/raftkv --config configs/node1.yaml --storage $(or $(STORAGE),bolt)
 
 run-node2:
 	go build -o bin/raftkv ./cmd/raftkv
-	./bin/raftkv --config configs/node2.yaml
+	./bin/raftkv --config configs/node2.yaml --storage $(or $(STORAGE),bolt)
 
 run-node3:
 	go build -o bin/raftkv ./cmd/raftkv
-	./bin/raftkv --config configs/node3.yaml
+	./bin/raftkv --config configs/node3.yaml --storage $(or $(STORAGE),bolt)
 
-# Run entire cluster
+# Run entire cluster with storage option
 run-cluster: build
-	./bin/raftkv --config configs/node1.yaml & echo $$! > data/node1.pid
+	./bin/raftkv --config configs/node1.yaml --storage $(or $(STORAGE),bolt) & echo $$! > data/node1.pid
 	sleep 2
-	./bin/raftkv --config configs/node2.yaml & echo $$! > data/node2.pid
+	./bin/raftkv --config configs/node2.yaml --storage $(or $(STORAGE),bolt) & echo $$! > data/node2.pid
 	sleep 2
-	./bin/raftkv --config configs/node3.yaml & echo $$! > data/node3.pid
+	./bin/raftkv --config configs/node3.yaml --storage $(or $(STORAGE),bolt) & echo $$! > data/node3.pid
 
 # Check cluster status
 status:
